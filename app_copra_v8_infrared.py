@@ -196,9 +196,6 @@ def update_frame(video_capture):
                         ser.write("l".encode())
                     elif label == 'NotDefined':
                         pass
-                    
-                    #Set the time to get the frame after
-                    sleep(0.5)
 
 def black_screen():
     sleep(0.5)
