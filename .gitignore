@@ -1,5 +1,8 @@
 # Add by Owner
 dataset/
+runs/
+yolov8m.pt
+yolov8n.pt 
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
