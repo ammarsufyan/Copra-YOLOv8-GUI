@@ -138,6 +138,8 @@ def update_frame(video_capture):
                 save_to_csv()
                 # SERIAL ACTIONS
                 ser.write("r".encode())
+                #Set the time to get the frame after
+                sleep(0.5)                
             elif label == 'Reguler':
                 quality = 'Reguler'
                 reguler_counter += 1
@@ -148,6 +150,8 @@ def update_frame(video_capture):
                 save_to_csv()
                 # SERIAL ACTIONS
                 ser.write("l".encode())
+                #Set the time to get the frame after
+                sleep(0.5)                
             elif label == 'Reject':
                 quality = 'Reject'
                 reject_counter += 1
@@ -158,6 +162,8 @@ def update_frame(video_capture):
                 save_to_csv()
                 # SERIAL ACTIONS
                 ser.write("l".encode())
+                #Set the time to get the frame after
+                sleep(0.5)                
             elif label == 'EdibleT':
                 quality = 'Edible Telungkup'
                 edibleT_counter += 1
@@ -168,6 +174,8 @@ def update_frame(video_capture):
                 save_to_csv()
                 # SERIAL ACTIONS
                 ser.write("r".encode())
+                #Set the time to get the frame after
+                sleep(0.5)                
             elif label == 'RegulerT':
                 quality = 'Reguler Telungkup'
                 regulerT_counter += 1
@@ -178,6 +186,8 @@ def update_frame(video_capture):
                 save_to_csv()
                 # SERIAL ACTIONS
                 ser.write("l".encode())
+                #Set the time to get the frame after
+                sleep(0.5)
             elif label == 'RejectT':
                 quality = 'Reject Telungkup'
                 rejectT_counter += 1
@@ -188,11 +198,10 @@ def update_frame(video_capture):
                 save_to_csv()
                 # SERIAL ACTIONS
                 ser.write("l".encode())
+                #Set the time to get the frame after
+                sleep(0.5)
             elif label == 'NotDefined':
                 pass
-            
-            #Set the time to get the frame after
-            sleep(0.5)
 
 def black_screen():
     sleep(0.5)
