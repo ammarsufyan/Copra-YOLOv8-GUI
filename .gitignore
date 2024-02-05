@@ -1,6 +1,9 @@
 # Add by Owner
 dataset/
+logs/
+capture_img/
 runs/
+testing/
 yolov8m.pt
 yolov8n.pt 
 
