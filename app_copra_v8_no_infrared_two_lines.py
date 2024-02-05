@@ -112,250 +112,245 @@ def update_frame(video_capture):
 
             results = model.track(img_name, persist=True,conf=0.3, iou=0.5, verbose=False)
 
-            try:
-                for r in results:
-                    im_array = r.plot()
-                    im = Image.fromarray(im_array[..., ::-1])  # RGB PIL image
-                    im.save(img_result_name)  # save image
+            for r in results:
+                im_array = r.plot()
+                im = Image.fromarray(im_array[..., ::-1])  # RGB PIL image
+                im.save(img_result_name)  # save image
 
-                    if r.boxes.id is not None:
-                        # Get the boxes, track IDs and classes
-                        boxes = r.boxes.xywh.cpu()
-                        track_ids = r.boxes.id.int().cpu().tolist()
-                        class_ids = r.boxes.cls.int().cpu().tolist()
-                        confidences = r.boxes.conf.cpu().tolist()
-                    
-                        # Plot the tracks and count objects crossing the line
-                        for box, track_id, class_id, confidence in zip(boxes, track_ids, class_ids, confidences):
-                            x, y, w, h = box
+                # Show it to the GUI
+                image_tk = ImageTk.PhotoImage(Image.open(img_result_name))
+                # Update the label with the new image
+                image_label.configure(image=image_tk)
+                image_label.image = image_tk
 
-                            # Convert pixel to cm
-                            object_width = int(w) * 0.026458
-                            object_height = int(h) * 0.026458
+                if r.boxes.id is not None:
+                    # Get the boxes, track IDs and classes
+                    boxes = r.boxes.xywh.cpu()
+                    track_ids = r.boxes.id.int().cpu().tolist()
+                    class_ids = r.boxes.cls.int().cpu().tolist()
+                    confidences = r.boxes.conf.cpu().tolist()
+                
+                    # Plot the tracks and count objects crossing the line
+                    for box, track_id, class_id, confidence in zip(boxes, track_ids, class_ids, confidences):
+                        x, y, w, h = box
 
-                            # Convert accuracy to percentage
-                            accuracy = confidence * 100
+                        # Convert pixel to cm
+                        object_width = int(w) * 0.026458
+                        object_height = int(h) * 0.026458
 
-                            # Round decimals
-                            object_width = round(object_width, 2)
-                            object_height = round(object_height, 2)
-                            accuracy = round(accuracy, 2)
+                        # Convert accuracy to percentage
+                        accuracy = confidence * 100
 
-                            # Check if the object crosses the line 1
-                            if point_x1 < x < point_x2 and abs(y - point_y) < 100:
-                                if track_id not in crossed_objects_line_1:
-                                    crossed_objects_line_1[track_id] = True
+                        # Round decimals
+                        object_width = round(object_width, 2)
+                        object_height = round(object_height, 2)
+                        accuracy = round(accuracy, 2)
 
-                                    # Get the current datetime
-                                    get_datetime_now = datetime.now()
-                                    # Format the datetime as desired
-                                    formatted_datetime = get_datetime_now.strftime("%Y-%m-%d-%S.%f")          
-                                    # Mark the line left
-                                    line = "Left"  
+                        # Check if the object crosses the line 1
+                        if point_x1 < x < point_x2 and abs(y - point_y) < 100:
+                            if track_id not in crossed_objects_line_1:
+                                crossed_objects_line_1[track_id] = True
 
-                                    if class_id == 0:
-                                        edible_counter += 1
-                                        total_counter += 1
-                                        quality = "Edible"
+                                # Get the current datetime
+                                get_datetime_now = datetime.now()
+                                # Format the datetime as desired
+                                formatted_datetime = get_datetime_now.strftime("%Y-%m-%d-%S.%f")          
+                                # Mark the line left
+                                line = "Left"  
 
-                                        # Update the text area
-                                        update_text(formatted_datetime, quality, accuracy, object_width, object_height, edible_counter, total_counter, line)
+                                if class_id == 0:
+                                    edible_counter += 1
+                                    total_counter += 1
+                                    quality = "Edible"
 
-                                        # Save to CSV
-                                        save_to_csv()
+                                    # Update the text area
+                                    update_text(formatted_datetime, quality, accuracy, object_width, object_height, edible_counter, total_counter, line)
 
-                                        # SERIAL ACTIONS
-                                        # ser.write("r".encode())
-                                        #Set the time to get the frame after
-                                        sleep(0.3)
+                                    # Save to CSV
+                                    save_to_csv()
 
-                                    elif class_id == 1:
-                                        reguler_counter += 1
-                                        total_counter += 1
-                                        quality = "Reguler"
-                                        # Update the text area
-                                        update_text(formatted_datetime, quality, accuracy, object_width, object_height, reguler_counter, total_counter, line)
+                                    # SERIAL ACTIONS
+                                    # ser.write("r".encode())
+                                    #Set the time to get the frame after
+                                    sleep(0.3)
 
-                                        # Save to CSV
-                                        save_to_csv()
+                                elif class_id == 1:
+                                    reguler_counter += 1
+                                    total_counter += 1
+                                    quality = "Reguler"
+                                    # Update the text area
+                                    update_text(formatted_datetime, quality, accuracy, object_width, object_height, reguler_counter, total_counter, line)
 
-                                        # SERIAL ACTIONS
-                                        # ser.write("l".encode())
-                                        #Set the time to get the frame after
-                                        sleep(0.3)
-                                    elif class_id == 2:
-                                        reject_counter += 1
-                                        total_counter += 1
-                                        quality = "Reject"
-                                        # Update the text area
-                                        update_text(formatted_datetime, quality, accuracy, object_width, object_height, reject_counter, total_counter, line)
+                                    # Save to CSV
+                                    save_to_csv()
 
-                                        # Save to CSV
-                                        save_to_csv()
+                                    # SERIAL ACTIONS
+                                    # ser.write("l".encode())
+                                    #Set the time to get the frame after
+                                    sleep(0.3)
+                                elif class_id == 2:
+                                    reject_counter += 1
+                                    total_counter += 1
+                                    quality = "Reject"
+                                    # Update the text area
+                                    update_text(formatted_datetime, quality, accuracy, object_width, object_height, reject_counter, total_counter, line)
 
-                                        # SERIAL ACTIONS
-                                        # ser.write("l".encode())
-                                        #Set the time to get the frame after
-                                        sleep(0.3)
-                                    elif class_id == 3:
-                                        edibleT_counter += 1
-                                        total_counter += 1
-                                        quality = "Edible Telungkup"
-                                        # Update the text area
-                                        update_text(formatted_datetime, quality, accuracy, object_width, object_height, edibleT_counter, total_counter, line)
+                                    # Save to CSV
+                                    save_to_csv()
 
-                                        # Save to CSV
-                                        save_to_csv()
+                                    # SERIAL ACTIONS
+                                    # ser.write("l".encode())
+                                    #Set the time to get the frame after
+                                    sleep(0.3)
+                                elif class_id == 3:
+                                    edibleT_counter += 1
+                                    total_counter += 1
+                                    quality = "Edible Telungkup"
+                                    # Update the text area
+                                    update_text(formatted_datetime, quality, accuracy, object_width, object_height, edibleT_counter, total_counter, line)
 
-                                        # SERIAL ACTIONS
-                                        # ser.write("r".encode())
-                                        #Set the time to get the frame after
-                                        sleep(0.3)
-                                    elif class_id == 4:
-                                        regulerT_counter += 1
-                                        total_counter += 1
-                                        quality = "Reguler Telungkup"
-                                        # Update the text area
-                                        update_text(formatted_datetime, quality, accuracy, object_width, object_height, regulerT_counter, total_counter, line)
+                                    # Save to CSV
+                                    save_to_csv()
 
-                                        # Save to CSV
-                                        save_to_csv()
+                                    # SERIAL ACTIONS
+                                    # ser.write("r".encode())
+                                    #Set the time to get the frame after
+                                    sleep(0.3)
+                                elif class_id == 4:
+                                    regulerT_counter += 1
+                                    total_counter += 1
+                                    quality = "Reguler Telungkup"
+                                    # Update the text area
+                                    update_text(formatted_datetime, quality, accuracy, object_width, object_height, regulerT_counter, total_counter, line)
 
-                                        # SERIAL ACTIONS
-                                        # ser.write("l".encode())
-                                        #Set the time to get the frame after
-                                        sleep(0.3)
-                                    elif class_id == 5:
-                                        rejectT_counter += 1
-                                        total_counter += 1
-                                        quality = "Reject Telungkup"
-                                        # Update the text area
-                                        update_text(formatted_datetime, quality, accuracy, object_width, object_height, rejectT_counter, total_counter, line)
+                                    # Save to CSV
+                                    save_to_csv()
 
-                                        # Save to CSV
-                                        save_to_csv()
+                                    # SERIAL ACTIONS
+                                    # ser.write("l".encode())
+                                    #Set the time to get the frame after
+                                    sleep(0.3)
+                                elif class_id == 5:
+                                    rejectT_counter += 1
+                                    total_counter += 1
+                                    quality = "Reject Telungkup"
+                                    # Update the text area
+                                    update_text(formatted_datetime, quality, accuracy, object_width, object_height, rejectT_counter, total_counter, line)
 
-                                        # SERIAL ACTIONS
-                                        # ser.write("l".encode())
-                                        #Set the time to get the frame after
-                                        sleep(0.3)
+                                    # Save to CSV
+                                    save_to_csv()
 
-                            # Check if the object crosses the line 2
-                            if point2_x1 < x < point2_x2 and abs(y - point_y) < 100:
-                                if track_id not in crossed_objects_line_2:
-                                    crossed_objects_line_2[track_id] = True
+                                    # SERIAL ACTIONS
+                                    # ser.write("l".encode())
+                                    #Set the time to get the frame after
+                                    sleep(0.3)
 
-                                    # Get the current datetime
-                                    get_datetime_now = datetime.now()
-                                    # Format the datetime as desired
-                                    formatted_datetime = get_datetime_now.strftime("%Y-%m-%d-%S.%f")
-                                    # Mark the line left
-                                    line = "Right" 
+                        # Check if the object crosses the line 2
+                        if point2_x1 < x < point2_x2 and abs(y - point_y) < 100:
+                            if track_id not in crossed_objects_line_2:
+                                crossed_objects_line_2[track_id] = True
 
-                                    if class_id == 0:
-                                        edible2_counter += 1
-                                        total2_counter += 1
-                                        quality = "Edible"
+                                # Get the current datetime
+                                get_datetime_now = datetime.now()
+                                # Format the datetime as desired
+                                formatted_datetime = get_datetime_now.strftime("%Y-%m-%d-%S.%f")
+                                # Mark the line left
+                                line = "Right" 
 
-                                        # Update the text area
-                                        update_text2(formatted_datetime, quality, accuracy, object_width, object_height, edible2_counter, total2_counter, line)
+                                if class_id == 0:
+                                    edible2_counter += 1
+                                    total2_counter += 1
+                                    quality = "Edible"
 
-                                        # Save to CSV
-                                        save_to_csv()
+                                    # Update the text area
+                                    update_text2(formatted_datetime, quality, accuracy, object_width, object_height, edible2_counter, total2_counter, line)
 
-                                        # SERIAL ACTIONS
-                                        # ser.write("r".encode())
-                                        #Set the time to get the frame after
-                                        sleep(0.3)
-                                    elif class_id == 1:
-                                        reguler2_counter += 1
-                                        total2_counter += 1
-                                        quality = "Reguler"
+                                    # Save to CSV
+                                    save_to_csv()
 
-                                        # Update the text area
-                                        update_text2(formatted_datetime, quality, accuracy, object_width, object_height, reguler2_counter, total2_counter, line)
+                                    # SERIAL ACTIONS
+                                    # ser.write("r".encode())
+                                    #Set the time to get the frame after
+                                    sleep(0.3)
+                                elif class_id == 1:
+                                    reguler2_counter += 1
+                                    total2_counter += 1
+                                    quality = "Reguler"
 
-                                        # Save to CSV
-                                        save_to_csv()
+                                    # Update the text area
+                                    update_text2(formatted_datetime, quality, accuracy, object_width, object_height, reguler2_counter, total2_counter, line)
 
-                                        # SERIAL ACTIONS
-                                        # ser.write("l".encode())
-                                        #Set the time to get the frame after
-                                        sleep(0.3)
-                                    elif class_id == 2:
-                                        reject2_counter += 1
-                                        total2_counter += 1
-                                        quality = "Reject"
+                                    # Save to CSV
+                                    save_to_csv()
 
-                                        # Update the text area
-                                        update_text2(formatted_datetime, quality, accuracy, object_width, object_height, reject2_counter, total2_counter, line)
+                                    # SERIAL ACTIONS
+                                    # ser.write("l".encode())
+                                    #Set the time to get the frame after
+                                    sleep(0.3)
+                                elif class_id == 2:
+                                    reject2_counter += 1
+                                    total2_counter += 1
+                                    quality = "Reject"
 
-                                        # Save to CSV
-                                        save_to_csv()
+                                    # Update the text area
+                                    update_text2(formatted_datetime, quality, accuracy, object_width, object_height, reject2_counter, total2_counter, line)
 
-                                        # SERIAL ACTIONS
-                                        # ser.write("l".encode())
-                                        #Set the time to get the frame after
-                                        sleep(0.3)
-                                    elif class_id == 3:
-                                        edibleT2_counter += 1
-                                        total2_counter += 1
-                                        quality = "Edible Telungkup"
+                                    # Save to CSV
+                                    save_to_csv()
 
-                                        # Update the text area
-                                        update_text2(formatted_datetime, quality, accuracy, object_width, object_height, edibleT2_counter, total2_counter, line)
+                                    # SERIAL ACTIONS
+                                    # ser.write("l".encode())
+                                    #Set the time to get the frame after
+                                    sleep(0.3)
+                                elif class_id == 3:
+                                    edibleT2_counter += 1
+                                    total2_counter += 1
+                                    quality = "Edible Telungkup"
 
-                                        # Save to CSV
-                                        save_to_csv()
+                                    # Update the text area
+                                    update_text2(formatted_datetime, quality, accuracy, object_width, object_height, edibleT2_counter, total2_counter, line)
 
-                                        # SERIAL ACTIONS
-                                        # ser.write("r".encode())
-                                        #Set the time to get the frame after
-                                        sleep(0.3)
+                                    # Save to CSV
+                                    save_to_csv()
 
-                                    elif class_id == 4:
-                                        regulerT2_counter += 1
-                                        total2_counter += 1
-                                        quality = "Reguler Telungkup"
+                                    # SERIAL ACTIONS
+                                    # ser.write("r".encode())
+                                    #Set the time to get the frame after
+                                    sleep(0.3)
 
-                                        # Update the text area
-                                        update_text2(formatted_datetime, quality, accuracy, object_width, object_height, regulerT2_counter, total2_counter, line)
+                                elif class_id == 4:
+                                    regulerT2_counter += 1
+                                    total2_counter += 1
+                                    quality = "Reguler Telungkup"
 
-                                        # Save to CSV
-                                        save_to_csv()
+                                    # Update the text area
+                                    update_text2(formatted_datetime, quality, accuracy, object_width, object_height, regulerT2_counter, total2_counter, line)
 
-                                        # SERIAL ACTIONS
-                                        # ser.write("l".encode())
-                                        #Set the time to get the frame after
-                                        sleep(0.3)
-                                    elif class_id == 5:
-                                        rejectT2_counter += 1
-                                        total2_counter += 1
-                                        quality = "Reject Telungkup"
+                                    # Save to CSV
+                                    save_to_csv()
 
-                                        # Update the text area
-                                        update_text2(formatted_datetime, quality, accuracy, object_width, object_height, rejectT2_counter, total2_counter, line)
+                                    # SERIAL ACTIONS
+                                    # ser.write("l".encode())
+                                    #Set the time to get the frame after
+                                    sleep(0.3)
+                                elif class_id == 5:
+                                    rejectT2_counter += 1
+                                    total2_counter += 1
+                                    quality = "Reject Telungkup"
 
-                                        # Save to CSV
-                                        save_to_csv()
+                                    # Update the text area
+                                    update_text2(formatted_datetime, quality, accuracy, object_width, object_height, rejectT2_counter, total2_counter, line)
 
-                                        # SERIAL ACTIONS
-                                        # ser.write("l".encode())
-                                        #Set the time to get the frame after
-                                        sleep(0.3)
-                    else:
-                        print("Tidak Terdeteksi")
-            except:
-                object_width = 0
-                object_height = 0
-                accuracy = 0
+                                    # Save to CSV
+                                    save_to_csv()
+
+                                    # SERIAL ACTIONS
+                                    # ser.write("l".encode())
+                                    #Set the time to get the frame after
+                                    sleep(0.3)
+                else:
+                    print("Tidak Terdeteksi")
             
-            # Show it to the GUI
-            image_tk = ImageTk.PhotoImage(Image.open(img_result_name))
-            # Update the label with the new image
-            image_label.configure(image=image_tk)
-            image_label.image = image_tk
-
 def black_screen():
     sleep(0.3)
     image_label.configure(image=placeholder_image)
