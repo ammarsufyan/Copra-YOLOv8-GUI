@@ -6,19 +6,19 @@ Copra Detection GUI using YOLOv8 model with custom dataset, GUI using Tkinter an
 
 1. Install the requirements.
 
-    ``` pip install -r requirements.txt ```
+    ```pip install -r requirements.txt```
 
 2. Next, if using RTX GPU, install the pytorch using CUDA.
 
-    ``` pip uninstall torch torchaudio torchvision ```
+    ```pip uninstall torch torchaudio torchvision```
 
-    ``` pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118```
+    ```pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118```
 
 3. Run the apps
 
-    ``` cd apps ```
+    ```cd apps```
 
-    ``` python app_copra_v8_no_infrared_two_lines.py ```
+    ```python app_copra_v8_no_infrared_two_lines.py```
 
 ## Citations and Acknowledgements
 
