@@ -4,14 +4,14 @@ Copra Detection GUI using YOLOv8 model with custom dataset, GUI using Tkinter an
 
 ## Step-by-step to Run the Apps
 
-1. Install Python [3.10.11](https://www.python.org/downloads/release/python-31011/).
+1. Install Python 3.10.11 [here](https://www.python.org/downloads/release/python-31011/).
 
 2. Install the requirements.
     ```
     pip install -r requirements.txt
     ```
 
-3. Next, if using RTX GPU, install the [Pytorch with CUDA](https://pytorch.org/get-started/locally/).
+3. Next, if using RTX GPU, install [Pytorch with CUDA](https://pytorch.org/get-started/locally/).
     ```
     pip uninstall torch torchaudio torchvision
     pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
