@@ -2,7 +2,7 @@
 
 Copra Detection GUI using YOLOv8 model with custom dataset, GUI using Tkinter and OpenCV. This GUI integrates industrial machine using PySerial with 2 COMs for Embedded Microcontroller (ESP32/STM32).
 
-## Step-by-step to run the apps
+## Step-by-step to Run the Apps
 
 1. Install the requirements.
 
