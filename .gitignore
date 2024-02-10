@@ -4,8 +4,10 @@ logs/
 capture_img/
 runs/
 testing/
+yolov8m-seg.pt
 yolov8m.pt
 yolov8n.pt 
+sam_b.pt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
