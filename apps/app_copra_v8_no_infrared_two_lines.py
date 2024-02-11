@@ -15,7 +15,7 @@ from ultralytics import YOLO
 
 # Load the model
 os.makedirs(os.path.dirname("models/"), exist_ok=True)
-model = YOLO('models\KopraV10_Ammar_best.pt')
+model = YOLO('../models/segmentation/KopraV10_Segmentation_Ammar_best.pt')
 model.fuse()
 
 # Declare variables
@@ -172,7 +172,7 @@ def update_frame(video_capture):
                                     # SERIAL ACTIONS
                                     # ser.write("r".encode())
                                     #Set the time to get the frame after
-                                    sleep(0.3)
+                                    sleep(0.1)
 
                                 elif class_id == 1:
                                     reguler_counter += 1
@@ -187,7 +187,7 @@ def update_frame(video_capture):
                                     # SERIAL ACTIONS
                                     # ser.write("l".encode())
                                     #Set the time to get the frame after
-                                    sleep(0.3)
+                                    sleep(0.1)
                                 elif class_id == 2:
                                     reject_counter += 1
                                     total_counter += 1
@@ -201,7 +201,7 @@ def update_frame(video_capture):
                                     # SERIAL ACTIONS
                                     # ser.write("l".encode())
                                     #Set the time to get the frame after
-                                    sleep(0.3)
+                                    sleep(0.1)
                                 elif class_id == 3:
                                     edibleT_counter += 1
                                     total_counter += 1
@@ -215,7 +215,7 @@ def update_frame(video_capture):
                                     # SERIAL ACTIONS
                                     # ser.write("r".encode())
                                     #Set the time to get the frame after
-                                    sleep(0.3)
+                                    sleep(0.1)
                                 elif class_id == 4:
                                     regulerT_counter += 1
                                     total_counter += 1
@@ -229,7 +229,7 @@ def update_frame(video_capture):
                                     # SERIAL ACTIONS
                                     # ser.write("l".encode())
                                     #Set the time to get the frame after
-                                    sleep(0.3)
+                                    sleep(0.1)
                                 elif class_id == 5:
                                     rejectT_counter += 1
                                     total_counter += 1
@@ -243,7 +243,7 @@ def update_frame(video_capture):
                                     # SERIAL ACTIONS
                                     # ser.write("l".encode())
                                     #Set the time to get the frame after
-                                    sleep(0.3)
+                                    sleep(0.1)
 
                         # Check if the object crosses the line 2
                         if point2_x1 < x < point2_x2 and abs(y - point_y) < 100:
@@ -271,7 +271,7 @@ def update_frame(video_capture):
                                     # SERIAL ACTIONS
                                     # ser.write("r".encode())
                                     #Set the time to get the frame after
-                                    sleep(0.3)
+                                    sleep(0.1)
                                 elif class_id == 1:
                                     reguler2_counter += 1
                                     total2_counter += 1
@@ -286,7 +286,7 @@ def update_frame(video_capture):
                                     # SERIAL ACTIONS
                                     # ser.write("l".encode())
                                     #Set the time to get the frame after
-                                    sleep(0.3)
+                                    sleep(0.1)
                                 elif class_id == 2:
                                     reject2_counter += 1
                                     total2_counter += 1
@@ -301,7 +301,7 @@ def update_frame(video_capture):
                                     # SERIAL ACTIONS
                                     # ser.write("l".encode())
                                     #Set the time to get the frame after
-                                    sleep(0.3)
+                                    sleep(0.1)
                                 elif class_id == 3:
                                     edibleT2_counter += 1
                                     total2_counter += 1
@@ -316,8 +316,7 @@ def update_frame(video_capture):
                                     # SERIAL ACTIONS
                                     # ser.write("r".encode())
                                     #Set the time to get the frame after
-                                    sleep(0.3)
-
+                                    sleep(0.1)
                                 elif class_id == 4:
                                     regulerT2_counter += 1
                                     total2_counter += 1
@@ -332,7 +331,7 @@ def update_frame(video_capture):
                                     # SERIAL ACTIONS
                                     # ser.write("l".encode())
                                     #Set the time to get the frame after
-                                    sleep(0.3)
+                                    sleep(0.1)
                                 elif class_id == 5:
                                     rejectT2_counter += 1
                                     total2_counter += 1
@@ -347,12 +346,12 @@ def update_frame(video_capture):
                                     # SERIAL ACTIONS
                                     # ser.write("l".encode())
                                     #Set the time to get the frame after
-                                    sleep(0.3)
+                                    sleep(0.1)
                 else:
                     print("Tidak Terdeteksi")
             
 def black_screen():
-    sleep(0.3)
+    sleep(0.1)
     image_label.configure(image=placeholder_image)
     image_label.image = placeholder_image
 
