@@ -11,7 +11,7 @@ Copra Detection GUI using YOLOv8 model with custom dataset, GUI using Tkinter an
     pip install -r requirements.txt
     ```
 
-3. Next, if using RTX GPU, install [Pytorch with CUDA](https://pytorch.org/get-started/locally/).
+3. (Optional) Next, if using RTX GPU, install [Pytorch with CUDA](https://pytorch.org/get-started/locally/).
     ```
     pip uninstall torch torchaudio torchvision
     pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
