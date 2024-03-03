@@ -11,11 +11,11 @@ from PIL import Image, ImageTk
 from ultralytics import YOLO
 
 # Serial initialization
-ser = serial.Serial('COM3', 115200)
+# ser = serial.Serial('COM14', 115200)
 
 # Load the model
 os.makedirs(os.path.dirname("models/"), exist_ok=True)
-model = YOLO('../models/segmentation/testing_edible_last.pt')
+model = YOLO('../models/segmentation/KopraV10_Segmentation_Ammar_best.pt')
 model.fuse()
 
 # Declare variables
@@ -75,19 +75,19 @@ def update_frame(video_capture):
     while isRunning:
         # Read the video frame
         success, frame = video_capture.read()
-        point_y = 360 # Atur point_y size sesuai kebutuhan
+        point_y = 180 # Atur point_y size sesuai kebutuhan
 
         # Atur point untuk line_1
-        point_x1 = 10 
-        point_x2 = 330
+        point_x1 = 30 
+        point_x2 = 300
 
         # Atur point untuk line_2
-        point2_x1 = 850
-        point2_x2 = 1270
+        point2_x1 = 350
+        point2_x2 = 620
 
         if success:
             # Convert the frame to RGB format
-        
+            # frame = cv2.resize(frame, (640, 360)) # Atur frame size sesuai kebutuhan
             cv2.line(frame, (point_x1, point_y), (point_x2, point_y), (0, 255, 0), 2)
             cv2.line(frame, (point2_x1, point_y), (point2_x2, point_y), (0, 255, 0), 2)
             frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -145,8 +145,6 @@ def update_frame(video_capture):
                         object_width = round(object_width, 2)
                         object_height = round(object_height, 2)
                         accuracy = round(accuracy, 2)
-                        
-                        print("Class ID:", class_id)
 
                         # Check if the object crosses the line 1
                         if point_x1 < x < point_x2 and abs(y - point_y) < 100:
@@ -159,7 +157,7 @@ def update_frame(video_capture):
                                 formatted_datetime = get_datetime_now.strftime("%Y-%m-%d-%S.%f")          
                                 # Mark the line left
                                 line = "Left"  
-                                
+
                                 if class_id == 0:
                                     edible_counter += 1
                                     total_counter += 1
@@ -172,7 +170,10 @@ def update_frame(video_capture):
                                     save_to_csv()
 
                                     # SERIAL ACTIONS
-                                    ser.write("l".encode())
+                                    # ser.write("r".encode())
+                                    #Set the time to get the frame after
+                                    sleep(0.1)
+
                                 elif class_id == 1:
                                     reguler_counter += 1
                                     total_counter += 1
@@ -182,6 +183,11 @@ def update_frame(video_capture):
 
                                     # Save to CSV
                                     save_to_csv()
+
+                                    # SERIAL ACTIONS
+                                    # ser.write("l".encode())
+                                    #Set the time to get the frame after
+                                    sleep(0.1)
                                 elif class_id == 2:
                                     reject_counter += 1
                                     total_counter += 1
@@ -191,6 +197,11 @@ def update_frame(video_capture):
 
                                     # Save to CSV
                                     save_to_csv()
+
+                                    # SERIAL ACTIONS
+                                    # ser.write("l".encode())
+                                    #Set the time to get the frame after
+                                    sleep(0.1)
                                 elif class_id == 3:
                                     edibleT_counter += 1
                                     total_counter += 1
@@ -202,7 +213,9 @@ def update_frame(video_capture):
                                     save_to_csv()
 
                                     # SERIAL ACTIONS
-                                    ser.write("l".encode())
+                                    # ser.write("r".encode())
+                                    #Set the time to get the frame after
+                                    sleep(0.1)
                                 elif class_id == 4:
                                     regulerT_counter += 1
                                     total_counter += 1
@@ -212,6 +225,11 @@ def update_frame(video_capture):
 
                                     # Save to CSV
                                     save_to_csv()
+
+                                    # SERIAL ACTIONS
+                                    # ser.write("l".encode())
+                                    #Set the time to get the frame after
+                                    sleep(0.1)
                                 elif class_id == 5:
                                     rejectT_counter += 1
                                     total_counter += 1
@@ -221,6 +239,12 @@ def update_frame(video_capture):
 
                                     # Save to CSV
                                     save_to_csv()
+
+                                    # SERIAL ACTIONS
+                                    # ser.write("l".encode())
+                                    #Set the time to get the frame after
+                                    sleep(0.1)
+
                         # Check if the object crosses the line 2
                         if point2_x1 < x < point2_x2 and abs(y - point_y) < 100:
                             if track_id not in crossed_objects_line_2:
@@ -245,7 +269,9 @@ def update_frame(video_capture):
                                     save_to_csv()
 
                                     # SERIAL ACTIONS
-                                    ser.write("r".encode())
+                                    # ser.write("r".encode())
+                                    #Set the time to get the frame after
+                                    sleep(0.1)
                                 elif class_id == 1:
                                     reguler2_counter += 1
                                     total2_counter += 1
@@ -256,7 +282,12 @@ def update_frame(video_capture):
 
                                     # Save to CSV
                                     save_to_csv()
-                                elif class_id ==2:
+
+                                    # SERIAL ACTIONS
+                                    # ser.write("l".encode())
+                                    #Set the time to get the frame after
+                                    sleep(0.1)
+                                elif class_id == 2:
                                     reject2_counter += 1
                                     total2_counter += 1
                                     quality = "Reject"
@@ -266,7 +297,12 @@ def update_frame(video_capture):
 
                                     # Save to CSV
                                     save_to_csv()
-                                elif class_id ==3:
+
+                                    # SERIAL ACTIONS
+                                    # ser.write("l".encode())
+                                    #Set the time to get the frame after
+                                    sleep(0.1)
+                                elif class_id == 3:
                                     edibleT2_counter += 1
                                     total2_counter += 1
                                     quality = "Edible Telungkup"
@@ -278,7 +314,9 @@ def update_frame(video_capture):
                                     save_to_csv()
 
                                     # SERIAL ACTIONS
-                                    ser.write("r".encode())
+                                    # ser.write("r".encode())
+                                    #Set the time to get the frame after
+                                    sleep(0.1)
                                 elif class_id == 4:
                                     regulerT2_counter += 1
                                     total2_counter += 1
@@ -289,7 +327,12 @@ def update_frame(video_capture):
 
                                     # Save to CSV
                                     save_to_csv()
-                                elif class_id ==5:
+
+                                    # SERIAL ACTIONS
+                                    # ser.write("l".encode())
+                                    #Set the time to get the frame after
+                                    sleep(0.1)
+                                elif class_id == 5:
                                     rejectT2_counter += 1
                                     total2_counter += 1
                                     quality = "Reject Telungkup"
@@ -299,11 +342,16 @@ def update_frame(video_capture):
 
                                     # Save to CSV
                                     save_to_csv()
+
+                                    # SERIAL ACTIONS
+                                    # ser.write("l".encode())
+                                    #Set the time to get the frame after
+                                    sleep(0.1)
                 else:
                     print("Tidak Terdeteksi")
             
 def black_screen():
-    sleep(0.5)
+    sleep(0.1)
     image_label.configure(image=placeholder_image)
     image_label.image = placeholder_image
 
@@ -313,8 +361,6 @@ def start_detection():
         isRunning = True
         # Start the camera (Use 0 for the default camera)
         video_capture = cv2.VideoCapture(0)
-        video_capture.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-        video_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
         # Start the thread
         x = threading.Thread(target=update_frame, args=[video_capture], daemon=True)
         x.start()
@@ -429,7 +475,7 @@ stop_button = ttk.Button(right_frame, text="Stop", command=stop_detection)
 stop_button.pack(side=tk.BOTTOM, fill=tk.BOTH, padx=10, pady=10)
 
 # Start with the placeholder image
-placeholder_image = ImageTk.PhotoImage(Image.new('RGB', (640, 480)))
+placeholder_image = ImageTk.PhotoImage(Image.new('RGB', (640, 360)))
 image_label.configure(image=placeholder_image)
 image_label.image = placeholder_image
 
