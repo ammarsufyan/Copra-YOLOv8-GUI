@@ -9,9 +9,10 @@ import cv2
 import serial
 from PIL import Image, ImageTk
 from ultralytics import YOLO
+from itertools import zip_longest
 
 # Serial initialization
-ser = serial.Serial('COM3', 115200)
+ser = serial.Serial('COM14', 115200)
 infrared = serial.Serial('COM4', 115200)
 
 # Load the model
@@ -36,7 +37,6 @@ def update_frame(video_capture):
     global total_counter
     global edible_counter
     global non_edible_counter
-
     
     while isRunning:
         # Read the video frame
@@ -44,7 +44,6 @@ def update_frame(video_capture):
 
         if success:
             # Convert the frame to RGB format
-        
             frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
             # Create an ImageTk object
@@ -53,14 +52,13 @@ def update_frame(video_capture):
             # Update the label with the new image
             image_label.configure(image=image_tk)
             image_label.image = image_tk
-
-            inWaitingIR = 1 # infrared.inWaiting()
             
-            if inWaitingIR > 0:
-                baca = b'OBSTACLE\r\n' # infrared.readline()
+            if infrared.inWaiting() > 0:
                 # Trigger 'OBSTACLE' from Serial
+                baca = infrared.readline()
                 if baca == b'OBSTACLE\r\n':
-
+                    # Check
+                    print("Terdeteksi")
                     # Create the directory if it doesn't exist
                     os.makedirs(os.path.dirname("capture_img/"), exist_ok=True)
                     # Draw the line on the frame
@@ -72,7 +70,7 @@ def update_frame(video_capture):
                     # Save the frame as an image file
                     cv2.imwrite(img_name, frame)
 
-                    results = model.track(img_name, persist=True,conf=0.3, iou=0.5, verbose=False)
+                    results = model.track(img_name, persist=True, conf=0.5, iou=0.5, verbose=False)
                     for r in results:
                         im_array = r.plot()
                         im = Image.fromarray(im_array[..., ::-1])  # RGB PIL image
@@ -91,53 +89,55 @@ def update_frame(video_capture):
                             confidences = r.boxes.conf.cpu().tolist()
                         
                             # Plot the tracks and count objects crossing the line
-                            for box, class_id, confidence in zip(boxes, class_ids, confidences):
-                                w, h = box
+                            for box, class_id, confidence in zip_longest(boxes, class_ids, confidences):
+                                if box is not None and class_id is not None and confidence is not None:
+                                    _, _, w, h = box
 
-                                # Convert pixel to cm
-                                object_width = int(w) * 0.026458
-                                object_height = int(h) * 0.026458
+                                    # Convert pixel to cm
+                                    object_width = int(w) * 0.026458
+                                    object_height = int(h) * 0.026458
 
-                                # Convert accuracy to percentage
-                                accuracy = confidence * 100
+                                    # Convert accuracy to percentage
+                                    accuracy = confidence * 100
 
-                                # Round decimals
-                                object_width = round(object_width, 2)
-                                object_height = round(object_height, 2)
-                                accuracy = round(accuracy, 2)
-                                
-                                print("Class ID:", class_id)
+                                    # Round decimals
+                                    object_width = round(object_width, 2)
+                                    object_height = round(object_height, 2)
+                                    accuracy = round(accuracy, 2)
 
-                                # Get the current datetime
-                                get_datetime_now = datetime.now()
-                                # Format the datetime as desired
-                                formatted_datetime = get_datetime_now.strftime("%Y-%m-%d-%S.%f")          
-                                
-                                if class_id == 0 or class_id == 1:
-                                    edible_counter += 1
-                                    total_counter += 1
-                                    quality = "Edible"
+                                    # Get the current datetime
+                                    get_datetime_now = datetime.now()
+                                    # Format the datetime as desired
+                                    formatted_datetime = get_datetime_now.strftime("%Y-%m-%d-%S.%f")          
+                                    
+                                    if class_id == 0 or class_id == 1:
+                                        edible_counter += 1
+                                        total_counter += 1
+                                        quality = "Edible"
 
-                                    # Update the text area
-                                    update_text(formatted_datetime, quality, accuracy, object_width, object_height, edible_counter, total_counter)
+                                        # Update the text area
+                                        update_text(formatted_datetime, quality, accuracy, object_width, object_height, edible_counter, total_counter)
 
-                                    # Save to CSV
-                                    save_to_csv()
+                                        # Save to CSV
+                                        save_to_csv()
 
-                                    # SERIAL ACTIONS
-                                    ser.write("l".encode())
-                                if class_id == 2 or class_id == 3:
-                                    non_edible_counter += 1
-                                    total_counter += 1
-                                    quality = "Non-Edible"
+                                        # SERIAL ACTIONS
+                                        ser.write("r".encode())
+                                    if class_id == 2 or class_id == 3:
+                                        non_edible_counter += 1
+                                        total_counter += 1
+                                        quality = "Non-Edible"
 
-                                    # Update the text area
-                                    update_text(formatted_datetime, quality, accuracy, object_width, object_height, non_edible_counter, total_counter)
+                                        # Update the text area
+                                        update_text(formatted_datetime, quality, accuracy, object_width, object_height, non_edible_counter, total_counter)
 
-                                    # Save to CSV
-                                    save_to_csv()
-                        else:
-                            print("Tidak Terdeteksi")
+                                        # Save to CSV
+                                        save_to_csv()
+                                        
+                                        # SERIAL ACTIONS
+                                        ser.write("l".encode())
+                else:
+                    print("Tidak Terdeteksi")
             
 def black_screen():
     sleep(0.5)
@@ -150,8 +150,6 @@ def start_detection():
         isRunning = True
         # Start the camera (Use 0 for the default camera)
         video_capture = cv2.VideoCapture(0)
-        video_capture.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-        video_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
         # Start the thread
         x = threading.Thread(target=update_frame, args=[video_capture], daemon=True)
         x.start()
