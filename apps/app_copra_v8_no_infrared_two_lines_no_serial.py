@@ -56,6 +56,8 @@ def update_frame(video_capture):
     while isRunning:
         # Read the video frame
         success, frame = video_capture.read()
+        
+        # Atur point_y size sesuai kebutuhan
         point_y = 180
 
         # Atur point untuk line_1

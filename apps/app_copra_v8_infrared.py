@@ -106,6 +106,7 @@ def update_frame(video_capture):
 
                                     # Get the current datetime
                                     get_datetime_now = datetime.now()
+                                    
                                     # Format the datetime as desired
                                     formatted_datetime = get_datetime_now.strftime("%Y-%m-%d-%S.%f")          
                                     
