@@ -4,6 +4,7 @@ logs/
 capture_img/
 runs/
 testing/
+models/
 yolov8m-seg.pt
 yolov8m.pt
 yolov8n.pt 

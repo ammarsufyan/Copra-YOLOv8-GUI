@@ -82,7 +82,6 @@ def update_frame(video_capture):
 
             # Create the directory if it doesn't exist
             os.makedirs(os.path.dirname("capture_img/"), exist_ok=True)
-            # Draw the line on the frame
             
             # Automatically capture the frame
             img_name = "capture_img/capture_img.jpg"
@@ -125,9 +124,7 @@ def update_frame(video_capture):
                         # Round decimals
                         object_width = round(object_width, 2)
                         object_height = round(object_height, 2)
-                        accuracy = round(accuracy, 2)
-                        
-                        print("Class ID:", class_id)
+                        accuracy = round(accuracy, 2)                        
 
                         # Check if the object crosses the line 1
                         if point_x1 < x < point_x2 and abs(y - point_y) < 100:

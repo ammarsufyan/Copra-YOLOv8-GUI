@@ -61,7 +61,6 @@ def update_frame(video_capture):
                     print("Terdeteksi")
                     # Create the directory if it doesn't exist
                     os.makedirs(os.path.dirname("capture_img/"), exist_ok=True)
-                    # Draw the line on the frame
                     
                     # Automatically capture the frame
                     img_name = "capture_img/capture_img.jpg"
